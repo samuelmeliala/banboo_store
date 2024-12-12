@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:banboo_store/screens/login_page.dart';
-import 'package:banboo_store/screens/register_page.dart';
+import 'package:banboo_store/views/auth/login_page.dart';
+import 'package:banboo_store/views/auth/register_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,13 +13,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/background.png'),
-            fit: BoxFit.fill,
-            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+          gradient: LinearGradient(
+            colors: [Colors.grey, Colors.black87],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: Column(
@@ -29,7 +28,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 150),
+                    Image(
+                      image: AssetImage("assets/bangboo.jpg"),
+                      width: 200,
+                    ),
+                    SizedBox(height: 20),
                     Text(
                       'Welcome to',
                       style: TextStyle(
@@ -57,9 +60,11 @@ class _SplashScreenState extends State<SplashScreen> {
                   width: 318,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        backgroundColor: const Color(0xFF0B60B0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      backgroundColor: const Color(0xFF686D76),
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -78,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF0B60B0)),
+                        foregroundColor: Colors.black),
                     onPressed: () {
                       Navigator.push(
                           context,
