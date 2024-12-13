@@ -1,3 +1,5 @@
+import 'package:banboo_store/controller/services/api.dart';
+import 'package:banboo_store/models/user_model.dart';
 import 'package:banboo_store/views/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:banboo_store/views/auth/login_page.dart';
@@ -126,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(10.0)),
                           backgroundColor: const Color(0xFF686D76),
                           foregroundColor: Colors.white),
-                      onPressed: () {
+                      onPressed: () async {
                         // Add validation
                         if (uname.text.isEmpty ||
                             email.text.isEmpty ||
@@ -156,15 +158,38 @@ class _RegisterPageState extends State<RegisterPage> {
                           return;
                         }
 
-                        // TODO: Add your registration logic here
+                        try {
+                          User? user = await tryRegister(
+                              uname.text, email.text, pass.text);
 
-                        // Navigate to home page and remove all previous routes
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage()),
-                          (route) => false,
-                        );
+                          if (user != null) {
+                            // Registration successful
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
+                              (route) => false,
+                            );
+                          } else {
+                            // Registration failed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Registration failed'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          // Handle network or other errors
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        }
                       },
                       child: const Text('Register'),
                     ),

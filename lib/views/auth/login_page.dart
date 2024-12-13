@@ -1,7 +1,9 @@
+import 'package:banboo_store/models/user_model.dart';
 import 'package:banboo_store/views/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:banboo_store/views/auth/register_page.dart';
 import 'package:banboo_store/views/screens/splash_screen.dart';
+import 'package:banboo_store/controller/services/api.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SplashScreen()));
+                MaterialPageRoute(builder: (context) => const SplashScreen()));
           },
         ),
       ),
@@ -104,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(10.0)),
                           backgroundColor: const Color(0xFF686D76),
                           foregroundColor: Colors.white),
-                      onPressed: () {
+                      onPressed: () async {
                         // Add validation
                         if (uname.text.isEmpty || pass.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -116,15 +118,38 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           return;
                         }
-                        // TODO: Add your authentication logic here
 
-                        // Navigate to home page and remove all previous routes
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage()),
-                          (route) => false,
-                        );
+                        try {
+                          User? user = await tryLogin(uname.text, pass.text);
+
+                          if (user != null) {
+                            // Login successful
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
+                              (route) => false,
+                            );
+                          } else {
+                            // Login failed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Invalid username or password'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          // Handle network or other errors
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        }
                       },
                       child: const Text('Login'),
                     ),
