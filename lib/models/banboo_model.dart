@@ -1,10 +1,10 @@
 class Banboo {
-  final String id;
-  final String name;
-  final double price;
-  final String description;
-  final String elementId;
-  final int level;
+  final int? id;
+  final String? name;
+  final double? price;
+  final String? description;
+  final String? elementId;
+  final int? level;
   bool isFavorite;
 
   Banboo({
