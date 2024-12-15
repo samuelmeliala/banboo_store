@@ -1,4 +1,5 @@
 import 'package:banboo_store/controller/services/api.dart';
+import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:banboo_store/views/page/main_page.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,14 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController uname = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController pass = TextEditingController();
+
+  bool passwordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwordVisible = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +106,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    obscureText: passwordVisible,
                     controller: pass,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(passwordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(
+                            () {
+                              passwordVisible = !passwordVisible;
+                            },
+                          );
+                        },
+                      ),
                       fillColor: Color(0xFFF7F8F9),
                       filled: true,
                       labelStyle: TextStyle(color: Colors.black54),
@@ -116,7 +138,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-                    obscureText: true,
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -163,6 +184,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               uname.text, email.text, pass.text);
 
                           if (user != null) {
+                            await SessionManager.saveUserSession(
+                              user.username?.toString() ?? 'User',
+                              user.id?.toString() ?? '',
+                              user.token?.toString() ?? '',
+                            );
                             // Registration successful
                             Navigator.pushAndRemoveUntil(
                               context,

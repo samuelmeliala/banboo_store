@@ -17,6 +17,14 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController uname = TextEditingController();
   TextEditingController pass = TextEditingController();
 
+  bool passwordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwordVisible = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +84,22 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    obscureText: passwordVisible,
                     controller: pass,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(passwordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(
+                            () {
+                              passwordVisible = !passwordVisible;
+                            },
+                          );
+                        },
+                      ),
                       fillColor: const Color(0xFFF7F8F9),
                       filled: true,
                       labelStyle: TextStyle(color: Colors.black54),
@@ -95,7 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    obscureText: true,
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
