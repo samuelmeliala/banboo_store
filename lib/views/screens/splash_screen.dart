@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:banboo_store/views/auth/login_page.dart';
-import 'package:banboo_store/views/auth/register_page.dart';
+import 'package:banboo_store/views/page/auth/login_page.dart';
+import 'package:banboo_store/views/page/auth/register_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

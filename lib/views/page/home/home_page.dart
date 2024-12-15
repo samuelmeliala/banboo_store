@@ -1,3 +1,5 @@
+import 'package:banboo_store/controller/utils/session_manager.dart';
+import 'package:banboo_store/views/page/product/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -9,7 +11,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  String username = 'User'; // Default value
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    String? savedUsername = await SessionManager.getUsername();
+    if (savedUsername != null) {
+      setState(() {
+        username = savedUsername;
+      });
+    }
+  }
+
   final TextEditingController _searchController = TextEditingController();
 
   // Dummy data for products
@@ -26,12 +44,6 @@ class _HomePageState extends State<HomePage> {
     // Add more products as needed
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +51,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Hello, User',
+        title: Text(
+          'Hello, $username',
           style: TextStyle(
             color: Colors.black,
             fontSize: 24,
@@ -218,96 +230,31 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: const Color(0xFF686D76),
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-// Product Detail Page
-class ProductDetailPage extends StatelessWidget {
-  final Map<String, dynamic> product;
-
-  const ProductDetailPage({super.key, required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(product['name']),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 300,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7F8F9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.image,
-                  size: 100,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              product['name'],
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '\$${product['price'].toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              product['description'],
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      //   selectedItemColor: const Color(0xFF686D76),
+      //   unselectedItemColor: Colors.grey,
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     // BottomNavigationBarItem(
+      //     //   icon: Icon(Icons.category),
+      //     //   label: 'Categories',
+      //     // ),
+      //     // BottomNavigationBarItem(
+      //     //   icon: Icon(Icons.favorite),
+      //     //   label: 'Favorites',
+      //     // ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person),
+      //       label: 'Profile',
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
