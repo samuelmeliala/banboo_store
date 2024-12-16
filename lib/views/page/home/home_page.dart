@@ -1,8 +1,6 @@
 import 'package:banboo_store/controller/services/api.dart';
-import 'package:banboo_store/controller/services/cart_services.dart';
 import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/banboo_model.dart';
-import 'package:banboo_store/views/page/cart/cart_page.dart';
 import 'package:banboo_store/views/page/product/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -30,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadData() async {
     await Future.wait([
       _loadBanboos(),
-      _loadCartItemCount(),
     ]);
   }
 
@@ -58,13 +55,6 @@ class _HomePageState extends State<HomePage> {
         });
       }
     }
-  }
-
-  Future<void> _loadCartItemCount() async {
-    final cart = await CartService.getCart();
-    setState(() {
-      cartItemCount = cart.length;
-    });
   }
 
   Future<void> _loadBanboos() async {
@@ -100,20 +90,6 @@ class _HomePageState extends State<HomePage> {
 
   final TextEditingController _searchController = TextEditingController();
 
-  // // Dummy data for products
-  // final List<Map<String, dynamic>> products = [
-  //   {
-  //     'id': 1,
-  //     'name': 'Fire Banboo',
-  //     'price': 29.99,
-  //     'description':
-  //         'A powerful fire element banboo that helps in emergency fire situations.',
-  //     'isFavorite': false,
-  //     'image': 'assets/fire_banboo.png',
-  //   },
-  //   // Add more products as needed
-  // ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,50 +105,6 @@ class _HomePageState extends State<HomePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.shopping_cart,
-                  color: Colors.black,
-                ),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CartPage()),
-                  );
-                  //Refresh cart count when returning from cart page
-                  _loadCartItemCount();
-                },
-              ),
-              if (cartItemCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      '$cartItemCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          )
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,

@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
-  // Keys for SharedPreferences
   static const String keyUsername = 'username';
   static const String keyUserId = 'userId';
   static const String keyToken = 'token';
@@ -21,6 +20,7 @@ class SessionManager {
     await prefs.setString(keyToken, token);
     await prefs.setString(keyRole, role);
     await prefs.setBool(keyIsLoggedIn, true);
+    print('Saved token: $token'); // Debug
   }
 
   // Get username
@@ -38,7 +38,9 @@ class SessionManager {
   // Get token
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(keyToken);
+    final token = prefs.getString(keyToken);
+    print('Retrieved token: $token'); // Debug
+    return token;
   }
 
   // Get role

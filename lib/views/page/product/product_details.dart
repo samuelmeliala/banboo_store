@@ -1,9 +1,8 @@
-// lib/views/page/product/product_details.dart
-import 'package:flutter/material.dart';
 import 'package:banboo_store/models/banboo_model.dart';
-import 'package:banboo_store/models/cart_item_model.dart';
-import 'package:banboo_store/controller/services/cart_services.dart';
+import 'package:flutter/material.dart';
+import 'package:banboo_store/controller/services/order_service.dart';
 
+// lib/views/page/product/product_details.dart
 class ProductDetailPage extends StatefulWidget {
   final Banboo banboo;
 
@@ -15,6 +14,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int quantity = 1;
+  bool isProcessing = false;
 
   void _incrementQuantity() {
     setState(() {
@@ -26,6 +26,61 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (quantity > 1) {
       setState(() {
         quantity--;
+      });
+    }
+  }
+
+  Future<void> _handleOrder() async {
+    setState(() {
+      isProcessing = true;
+    });
+
+    try {
+      final orderId = await OrderService.createOrder(widget.banboo, quantity);
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Order Successful!'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Order ID: #$orderId'),
+                  const SizedBox(height: 8),
+                  Text('Item: ${widget.banboo.name}'),
+                  Text('Quantity: $quantity'),
+                  Text(
+                      'Total: \$${(widget.banboo.price * quantity).toStringAsFixed(2)}'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                    Navigator.of(context).pop(); // Return to previous screen
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating order: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        isProcessing = false;
       });
     }
   }
@@ -60,7 +115,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
             ),
 
-            // Product details
+            // Details section
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -134,39 +189,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
+            minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () async {
-            try {
-              await CartService.addToCart(
-                CartItem(
-                  banboo: widget.banboo,
-                  quantity: quantity,
+          onPressed: isProcessing ? null : _handleOrder,
+          child: isProcessing
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Text(
+                  'Order Now',
+                  style: TextStyle(fontSize: 18),
                 ),
-              );
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Added to cart successfully!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            } catch (e) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error adding to cart: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            }
-          },
-          child: const Text(
-            'Add to Cart',
-            style: TextStyle(fontSize: 18),
-          ),
         ),
       ),
     );
