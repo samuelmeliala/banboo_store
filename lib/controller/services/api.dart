@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:banboo_store/models/banboo_model.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,4 +34,37 @@ Future<User?> tryRegister(
   }
 
   return null;
+}
+
+Future<List<Banboo>> fetchBanboos() async {
+  String url = '$baseURL/banboos';
+
+  try {
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.map((json) => Banboo.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load banboos');
+    }
+  } catch (e) {
+    throw Exception('Error: $e');
+  }
+}
+
+Future<Banboo> fetchBanbooById(int id) async {
+  String url = '$baseURL/banboos/$id';
+
+  try {
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return Banboo.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load banboo');
+    }
+  } catch (e) {
+    throw Exception('Error: $e');
+  }
 }

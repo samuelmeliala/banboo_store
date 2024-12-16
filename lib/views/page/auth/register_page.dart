@@ -19,11 +19,20 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController pass = TextEditingController();
 
   bool passwordVisible = false;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     passwordVisible = true;
+  }
+
+  @override
+  void dispose() {
+    uname.dispose();
+    email.dispose();
+    pass.dispose();
+    super.dispose();
   }
 
   @override
@@ -33,7 +42,6 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        //title: const Text('Register'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
@@ -68,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: 'Username',
                       fillColor: const Color(0xFFF7F8F9),
                       filled: true,
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: const TextStyle(color: Colors.black54),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: const BorderSide(
@@ -90,7 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: 'Email',
                       fillColor: const Color(0xFFF7F8F9),
                       filled: true,
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: const TextStyle(color: Colors.black54),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                           borderSide: const BorderSide(
@@ -122,9 +130,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           );
                         },
                       ),
-                      fillColor: Color(0xFFF7F8F9),
+                      fillColor: const Color(0xFFF7F8F9),
                       filled: true,
-                      labelStyle: TextStyle(color: Colors.black54),
+                      labelStyle: const TextStyle(color: Colors.black54),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: const BorderSide(
@@ -149,75 +157,107 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(10.0)),
                           backgroundColor: const Color(0xFF686D76),
                           foregroundColor: Colors.white),
-                      onPressed: () async {
-                        // Add validation
-                        if (uname.text.isEmpty ||
-                            email.text.isEmpty ||
-                            pass.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill in all fields'),
-                              backgroundColor: Colors.red,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                          return;
-                        }
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              // Validate username
+                              if (uname.text.trim().toLowerCase() == 'admin') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Username not available'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                                return;
+                              }
 
-                        // Validate email format
-                        final emailRegex =
-                            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                        if (!emailRegex.hasMatch(email.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Please enter a valid email address'),
-                              backgroundColor: Colors.red,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                          return;
-                        }
+                              // Add validation
+                              if (uname.text.isEmpty ||
+                                  email.text.isEmpty ||
+                                  pass.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Please fill in all fields'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                                return;
+                              }
 
-                        try {
-                          User? user = await tryRegister(
-                              uname.text, email.text, pass.text);
+                              // Validate email format
+                              final emailRegex =
+                                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              if (!emailRegex.hasMatch(email.text)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Please enter a valid email address'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                                return;
+                              }
 
-                          if (user != null) {
-                            await SessionManager.saveUserSession(
-                              user.username?.toString() ?? 'User',
-                              user.id?.toString() ?? '',
-                              user.token?.toString() ?? '',
-                            );
-                            // Registration successful
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainPage()),
-                              (route) => false,
-                            );
-                          } else {
-                            // Registration failed
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Registration failed'),
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 1),
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              try {
+                                User? user = await tryRegister(
+                                    uname.text, email.text, pass.text);
+
+                                if (user != null) {
+                                  await SessionManager.saveUserSession(
+                                    user.username?.toString() ?? 'User',
+                                    user.id?.toString() ?? '',
+                                    user.token?.toString() ?? '',
+                                    'customer', // Always set role as customer for new registrations
+                                  );
+                                  // Registration successful
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const MainPage()),
+                                    (route) => false,
+                                  );
+                                } else {
+                                  // Registration failed
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Registration failed'),
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                // Handle network or other errors
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 1),
+                                  ),
+                                );
+                              } finally {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            },
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
                               ),
-                            );
-                          }
-                        } catch (e) {
-                          // Handle network or other errors
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error: ${e.toString()}'),
-                              backgroundColor: Colors.red,
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Register'),
+                            )
+                          : const Text('Register'),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -234,7 +274,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: const Text('Google'),
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -242,6 +281,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Colors.grey)),
+                      child: const Text('Google'),
                     ),
                   ),
                   const SizedBox(height: 40),

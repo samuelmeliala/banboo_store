@@ -1,15 +1,17 @@
+import 'package:banboo_store/models/banboo_model.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailPage extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final Banboo banboo;
 
-  const ProductDetailPage({super.key, required this.product});
+  const ProductDetailPage({super.key, required this.banboo});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(product['name']),
+        title: Text(banboo.name),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
@@ -35,7 +37,7 @@ class ProductDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              product['name'],
+              banboo.name,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -43,7 +45,7 @@ class ProductDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '\$${product['price'].toStringAsFixed(2)}',
+              '\$${banboo.price.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 20,
                 color: Colors.black54,
@@ -51,7 +53,7 @@ class ProductDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              product['description'],
+              banboo.description,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.black87,

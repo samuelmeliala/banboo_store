@@ -146,9 +146,11 @@ class _LoginPageState extends State<LoginPage> {
                           if (user != null) {
                             // Save user session
                             await SessionManager.saveUserSession(
-                                user.username?.toString() ?? 'User',
-                                user.id?.toString() ?? '',
-                                user.token?.toString() ?? '');
+                              user.username?.toString() ?? 'User',
+                              user.id?.toString() ?? '',
+                              user.token?.toString() ?? '',
+                              user.role?.toString() ?? 'customer',
+                            );
 
                             // Navigate to home
                             Navigator.pushAndRemoveUntil(

@@ -1,3 +1,4 @@
+import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/views/page/home/home_page.dart';
 import 'package:banboo_store/views/page/profile/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,20 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserRole();
+  }
+
+  Future<void> _checkUserRole() async {
+    String? role = await SessionManager.getRole();
+    setState(() {
+      isAdmin = role == 'admin';
+    });
+  }
 
   void _onItemTapped(int value) {
     setState(() {
@@ -25,14 +40,15 @@ class _MainPageState extends State<MainPage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: const [
-          HomePage(),
-          ProfilePage(),
+          const HomePage(),
+          const ProfilePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: const Color(0xFF686D76),
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
