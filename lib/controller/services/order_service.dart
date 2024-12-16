@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:banboo_store/models/order_model.dart';
 import 'package:http/http.dart' as http;
 import '../../models/banboo_model.dart';
 import '../../controller/utils/session_manager.dart';
@@ -40,6 +41,29 @@ class OrderService {
     } catch (e) {
       print('Error in createOrder: $e');
       throw Exception('Failed to create order: $e');
+    }
+  }
+
+  static Future<List<Order>> getOrderHistory() async {
+    String? token = await SessionManager.getToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseURL/orders/history'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Order.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load order history');
+      }
+    } catch (e) {
+      throw Exception('Error fetching order history: $e');
     }
   }
 }

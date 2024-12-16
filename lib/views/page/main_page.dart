@@ -1,5 +1,6 @@
 import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/views/page/home/home_page.dart';
+import 'package:banboo_store/views/page/order/order_history.dart';
 import 'package:banboo_store/views/page/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 
@@ -40,8 +41,9 @@ class _MainPageState extends State<MainPage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: const [
-          const HomePage(),
-          const ProfilePage(),
+          HomePage(),
+          OrderHistoryPage(),
+          ProfilePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -55,10 +57,10 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.category),
-          //   label: 'Categories',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'Order',
+          ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.favorite),
           //   label: 'Favorites',

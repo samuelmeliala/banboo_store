@@ -1,4 +1,5 @@
 import 'package:banboo_store/models/banboo_model.dart';
+import 'package:banboo_store/views/page/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:banboo_store/controller/services/order_service.dart';
 
@@ -59,8 +60,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close dialog
-                    Navigator.of(context).pop(); // Return to previous screen
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MainPage(),
+                      ),
+                    );
                   },
                   child: const Text('OK'),
                 ),

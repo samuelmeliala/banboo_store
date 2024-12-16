@@ -2,8 +2,8 @@ import 'package:banboo_store/controller/services/api.dart';
 import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/banboo_model.dart';
 import 'package:banboo_store/views/page/product/product_details.dart';
+import 'package:banboo_store/views/widgets/image_carousel.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         title: Text(
           'Hello, $username',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -129,36 +129,7 @@ class _HomePageState extends State<HomePage> {
             ),
 
             // Carousel for featured products
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 200.0,
-                autoPlay: true,
-                enlargeCenterPage: true,
-              ),
-              items: [1, 2, 3].map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF686D76),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Featured Banboo $i',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
+            const CarouselImage(),
 
             // Products Grid
             Expanded(
