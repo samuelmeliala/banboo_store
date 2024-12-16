@@ -10,6 +10,7 @@ class CarouselImage extends StatelessWidget {
     'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/09/zenless-zone-zero-key-visual-with-bangboos.jpg?q=70&fit=crop&w=1140&h=&dpr=1',
     'https://cdn.oneesports.gg/cdn-data/2024/07/ZenlessZoneZero_TheBangboo-1024x576.jpg',
     'https://mmc.tirto.id/image/otf/970x0/2024/07/03/zenless-zone-zero_ratio-16x9.jpg',
+    'https://admin.esports.gg/wp-content/uploads/2024/07/What-are-Bangboos-in-Zenless-Zone-Zero-1-968x544.jpg',
   ];
 
   @override
