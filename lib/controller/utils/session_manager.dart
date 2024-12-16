@@ -20,7 +20,6 @@ class SessionManager {
     await prefs.setString(keyToken, token);
     await prefs.setString(keyRole, role);
     await prefs.setBool(keyIsLoggedIn, true);
-    print('Saved token: $token'); // Debug
   }
 
   // Get username
@@ -39,7 +38,6 @@ class SessionManager {
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(keyToken);
-    print('Retrieved token: $token'); // Debug
     return token;
   }
 
