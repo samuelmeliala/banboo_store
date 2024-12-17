@@ -15,8 +15,7 @@ class _AddBanbooPageState extends State<AddBanbooPage> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _levelController = TextEditingController();
-  final TextEditingController _imageUrlController =
-      TextEditingController(); // New controller for image URL
+  final TextEditingController _imageUrlController = TextEditingController();
 
   int _selectedElementId = 1;
   bool _isLoading = false;
@@ -40,7 +39,7 @@ class _AddBanbooPageState extends State<AddBanbooPage> {
             : null,
       };
 
-      print('Submitting banboo data: $banbooData'); // Add this for debugging
+      // print('Submitting banboo data: $banbooData');
 
       await createBanboo(banbooData);
 
@@ -59,8 +58,7 @@ class _AddBanbooPageState extends State<AddBanbooPage> {
           SnackBar(
             content: Text('Error creating banboo: ${e.toString()}'),
             backgroundColor: Colors.red,
-            duration:
-                const Duration(seconds: 5), // Longer duration to read error
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -128,12 +126,10 @@ class _AddBanbooPageState extends State<AddBanbooPage> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {}); // Refresh to update image preview
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 16),
-
-              // Rest of your form fields remain the same
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(

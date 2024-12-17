@@ -6,7 +6,7 @@ class Order {
   final double totalPrice;
   final DateTime orderDate;
   final String status;
-  final String banbooName; // Including banboo details
+  final String banbooName;
   final String? banbooImage;
 
   Order({
@@ -16,7 +16,7 @@ class Order {
     required this.quantity,
     required this.totalPrice,
     required this.orderDate,
-    this.status = 'success', //
+    this.status = 'success',
     required this.banbooName,
     this.banbooImage,
   });
@@ -30,8 +30,7 @@ class Order {
       totalPrice: double.parse(json['totalPrice'].toString()),
       orderDate: DateTime.parse(json['orderDate']),
       status: json['status'] ?? 'success',
-      banbooName:
-          json['name'], // Assuming this comes from the JOIN with banboo table
+      banbooName: json['name'],
       banbooImage: json['imageUrl'],
     );
   }

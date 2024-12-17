@@ -46,11 +46,9 @@ class Banboo {
   }
 }
 
-// Element types enum for better type safety
 enum BanbooElement {
   fire,
   water,
   earth,
   air,
-  // Add more elements as needed
 }

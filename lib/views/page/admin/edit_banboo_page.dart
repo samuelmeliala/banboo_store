@@ -89,7 +89,9 @@ class _EditBanbooPageState extends State<EditBanbooPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('Edit ${widget.banboo.name}'),
       ),
       body: SingleChildScrollView(
@@ -141,12 +143,10 @@ class _EditBanbooPageState extends State<EditBanbooPage> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {}); // Refresh to update image preview
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 16),
-
-              // Rest of the form fields
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -289,9 +289,8 @@ class _EditBanbooPageState extends State<EditBanbooPage> {
                                   try {
                                     await deleteBanboo(widget.banboo.banbooId);
                                     if (mounted) {
-                                      Navigator.pop(context); // Close dialog
-                                      Navigator.pop(
-                                          context, true); // Go back to list
+                                      Navigator.pop(context);
+                                      Navigator.pop(context, true);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -303,7 +302,7 @@ class _EditBanbooPageState extends State<EditBanbooPage> {
                                     }
                                   } catch (e) {
                                     if (mounted) {
-                                      Navigator.pop(context); // Close dialog
+                                      Navigator.pop(context);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

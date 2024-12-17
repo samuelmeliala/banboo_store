@@ -1,4 +1,3 @@
-// lib/views/profile/profile_page.dart
 import 'package:banboo_store/views/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:banboo_store/controller/utils/session_manager.dart';
@@ -32,7 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       await SessionManager.clearSession();
 
-      // Navigate to login page and clear all previous routes
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -68,69 +66,71 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
 
-            // Profile Picture Circle
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFF7F8F9),
-                border: Border.all(
-                  color: const Color(0xFFE8ECF4),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.person,
-                size: 60,
-                color: Color(0xFF686D76),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Username
-            Text(
-              username,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // Logout Button
-            SizedBox(
-              width: 318,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  backgroundColor: const Color(0xFF686D76),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: _logout,
-                child: const Text(
-                  'Logout',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+              // Profile Picture Circle
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFF7F8F9),
+                  border: Border.all(
+                    color: const Color(0xFFE8ECF4),
+                    width: 1,
                   ),
                 ),
+                child: const Icon(
+                  Icons.person,
+                  size: 60,
+                  color: Color(0xFF686D76),
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 16),
+
+              // Username
+              Text(
+                username,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Logout Button
+              SizedBox(
+                width: 318,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    backgroundColor: const Color(0xFF686D76),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: _logout,
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

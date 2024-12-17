@@ -67,7 +67,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              // Wait for the result from AddBanbooPage
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -75,7 +74,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               );
 
-              // If result is true (success), reload the banboos
               if (result == true) {
                 _loadBanboos();
               }
@@ -100,7 +98,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () async {
-                            // Wait for the result from EditBanbooPage
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -109,7 +106,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               ),
                             );
 
-                            // If result is true (success), reload the banboos
                             if (result == true) {
                               _loadBanboos();
                             }

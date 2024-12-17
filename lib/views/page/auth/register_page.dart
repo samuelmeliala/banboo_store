@@ -1,4 +1,5 @@
 import 'package:banboo_store/controller/services/api.dart';
+import 'package:banboo_store/controller/services/google_authservice.dart';
 import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:banboo_store/views/page/main_page.dart';
@@ -214,7 +215,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     user.username?.toString() ?? 'User',
                                     user.id?.toString() ?? '',
                                     user.token?.toString() ?? '',
-                                    'customer', // Always set role as customer for new registrations
+                                    'customer',
                                   );
                                   // Registration successful
                                   Navigator.pushAndRemoveUntil(
@@ -262,7 +263,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 30),
                   const Text(
-                    'Or Register With',
+                    'Or Login With',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -273,7 +274,33 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 318,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          final result = await GoogleAuthService.signIn();
+                          if (result['success']) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainPage()),
+                              (route) => false,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result['message']),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to sign in with Google'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),

@@ -1,3 +1,4 @@
+import 'package:banboo_store/controller/services/google_authservice.dart';
 import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:banboo_store/views/page/main_page.dart';
@@ -197,7 +198,33 @@ class _LoginPageState extends State<LoginPage> {
                     width: 318,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          final result = await GoogleAuthService.signIn();
+                          if (result['success']) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainPage()),
+                              (route) => false,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result['message']),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to sign in with Google'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
                       child: Text('Google'),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

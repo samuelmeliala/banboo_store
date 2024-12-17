@@ -10,7 +10,7 @@ class OrderService {
     String? token = await SessionManager.getToken();
     if (token == null) throw Exception('Not authenticated');
 
-    print('Token used for request: $token'); // Debug log
+    // print('Token used for request: $token');
 
     final totalPrice = banboo.price * quantity;
 
@@ -18,7 +18,7 @@ class OrderService {
       final response = await http.post(
         Uri.parse('$baseURL/orders/create'),
         headers: {
-          'Authorization': 'Bearer $token', // Add 'Bearer ' prefix
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: json.encode({
@@ -28,8 +28,8 @@ class OrderService {
         }),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      // print('Response status: ${response.statusCode}');
+      // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -39,7 +39,7 @@ class OrderService {
         throw Exception(errorData['error'] ?? 'Failed to create order');
       }
     } catch (e) {
-      print('Error in createOrder: $e');
+      // print('Error in createOrder: $e');
       throw Exception('Failed to create order: $e');
     }
   }

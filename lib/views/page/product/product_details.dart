@@ -3,7 +3,6 @@ import 'package:banboo_store/views/page/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:banboo_store/controller/services/order_service.dart';
 
-// lib/views/page/product/product_details.dart
 class ProductDetailPage extends StatefulWidget {
   final Banboo banboo;
 

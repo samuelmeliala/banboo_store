@@ -4,8 +4,7 @@ import 'package:banboo_store/models/banboo_model.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
-const baseURL = 'http://10.0.2.2:3000'; // For Android emulator
-// Use http://localhost:3000 for iOS simulator
+const baseURL = 'http://10.0.2.2:3000';
 
 Future<User?> tryLogin(String username, String password) async {
   String url = '$baseURL/users/login';
@@ -23,13 +22,12 @@ Future<User?> tryLogin(String username, String password) async {
 
 Future<User?> tryRegister(
     String username, String email, String password) async {
-  String url = '$baseURL/users/register'; // Add this endpoint to your backend
+  String url = '$baseURL/users/register';
 
   var result = await http.post(Uri.parse(url),
       body: {'username': username, 'email': email, 'password': password});
 
   if (result.statusCode == 201) {
-    // Usually 201 for resource creation
     var data = json.decode(result.body);
     return User.fromJson(data);
   }
@@ -93,12 +91,10 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
   try {
     final token = await SessionManager.getToken();
 
-    // Convert price to double if it's not already
     if (banbooData['price'] is String) {
       banbooData['price'] = double.parse(banbooData['price']);
     }
 
-    // Convert elementId and level to int if they're not already
     if (banbooData['elementId'] is String) {
       banbooData['elementId'] = int.parse(banbooData['elementId']);
     }
@@ -106,8 +102,7 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
       banbooData['level'] = int.parse(banbooData['level']);
     }
 
-    // Print the data being sent for debugging
-    print('Sending data to server: ${json.encode(banbooData)}');
+    // print('Sending data to server: ${json.encode(banbooData)}');
 
     final response = await http.post(
       Uri.parse('$baseURL/banboos'),
@@ -118,7 +113,7 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
       body: json.encode(banbooData),
     );
 
-    print('Server response: ${response.body}'); // Add this for debugging
+    // print('Server response: ${response.body}');
 
     if (response.statusCode == 201) {
       return Banboo.fromJson(json.decode(response.body));
@@ -126,7 +121,7 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
       throw Exception('Failed to create banboo: ${response.body}');
     }
   } catch (e) {
-    print('Error details: $e'); // Add this for debugging
+    // print('Error details: $e');
     throw Exception('Error creating banboo: $e');
   }
 }
@@ -134,6 +129,14 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
 Future<Banboo> updateBanboo(int id, Map<String, dynamic> banbooData) async {
   try {
     final token = await SessionManager.getToken();
+    final isAdmin = await SessionManager.isAdmin();
+
+    if (!isAdmin) {
+      throw Exception('Access denied. Admin privileges required.');
+    }
+
+    // print('Updating banboo with data: $banbooData');
+
     final response = await http.put(
       Uri.parse('$baseURL/banboos/$id'),
       headers: {
@@ -143,19 +146,32 @@ Future<Banboo> updateBanboo(int id, Map<String, dynamic> banbooData) async {
       body: json.encode(banbooData),
     );
 
+    // print('Update response status: ${response.statusCode}');
+    // print('Update response body: ${response.body}');
+
     if (response.statusCode == 200) {
       return Banboo.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to update banboo');
+      final errorData = json.decode(response.body);
+      throw Exception(errorData['error'] ?? 'Failed to update banboo');
     }
   } catch (e) {
-    throw Exception('Error: $e');
+    // print('Error updating banboo: $e');
+    throw Exception('Failed to update banboo: $e');
   }
 }
 
 Future<void> deleteBanboo(int id) async {
   try {
     final token = await SessionManager.getToken();
+    final isAdmin = await SessionManager.isAdmin();
+
+    if (!isAdmin) {
+      throw Exception('Access denied. Admin privileges required.');
+    }
+
+    // print('Deleting banboo with ID: $id');
+
     final response = await http.delete(
       Uri.parse('$baseURL/banboos/$id'),
       headers: {
@@ -164,10 +180,15 @@ Future<void> deleteBanboo(int id) async {
       },
     );
 
+    // print('Delete response status: ${response.statusCode}');
+    // print('Delete response body: ${response.body}');
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete banboo');
+      final errorData = json.decode(response.body);
+      throw Exception(errorData['error'] ?? 'Failed to delete banboo');
     }
   } catch (e) {
-    throw Exception('Error: $e');
+    // print('Error deleting banboo: $e');
+    throw Exception('Failed to delete banboo: $e');
   }
 }

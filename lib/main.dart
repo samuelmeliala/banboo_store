@@ -17,8 +17,6 @@ class MyApp extends StatelessWidget {
       title: 'Banboo Store',
       routes: {
         'home': (context) => const HomePage(),
-        // 'category': (context) => const DetailItemPage()
-        // 'favorite': (context) => const HomePage(),
         'profile': (context) => const ProfilePage()
       },
       theme: ThemeData(

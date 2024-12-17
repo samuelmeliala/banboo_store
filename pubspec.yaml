@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: ^2.3.3
   intl: ^0.20.1
   image_picker: ^1.1.2
+  google_sign_in: ^6.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,3 @@
-// lib/views/page/order/order_history_page.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order_model.dart';
@@ -69,7 +68,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // Show immediate visual feedback
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           await _loadOrders();
         },
@@ -213,7 +211,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     switch (status.toLowerCase()) {
       case 'pending':
         return Colors.orange;
-      case 'confirmed':
+      case 'success':
         return Colors.green;
       case 'cancelled':
         return Colors.red;

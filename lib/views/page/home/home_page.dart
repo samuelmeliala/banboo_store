@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
       var banboos = await fetchBanboos();
       setState(() {
         banboos = banboos;
-        searchBanboo = banboos; // Initially show all banboos
+        searchBanboo = banboos;
         isLoading = false;
       });
     } catch (e) {
@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _onRefresh() async {
-    // Show loading indicator
     setState(() {
       isLoading = true;
     });
@@ -118,11 +117,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadUsername() async {
-    String? savedUsername = await SessionManager.getUsername();
-    if (savedUsername != null) {
-      setState(() {
-        username = savedUsername;
-      });
+    try {
+      String? savedUsername = await SessionManager.getUsername();
+      if (savedUsername != null && mounted) {
+        setState(() {
+          username = savedUsername;
+        });
+      }
+      // print('Loaded username: $savedUsername');
+    } catch (e) {
+      // print('Error loading username: $e');
     }
   }
 
