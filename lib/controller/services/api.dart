@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:banboo_store/controller/utils/session_manager.dart';
 import 'package:banboo_store/models/banboo_model.dart';
 import 'package:banboo_store/models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -85,5 +86,88 @@ Future<List<Banboo>> searchBanboos(String query) async {
     }
   } catch (e) {
     throw Exception('Error searching banboos: $e');
+  }
+}
+
+Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
+  try {
+    final token = await SessionManager.getToken();
+
+    // Convert price to double if it's not already
+    if (banbooData['price'] is String) {
+      banbooData['price'] = double.parse(banbooData['price']);
+    }
+
+    // Convert elementId and level to int if they're not already
+    if (banbooData['elementId'] is String) {
+      banbooData['elementId'] = int.parse(banbooData['elementId']);
+    }
+    if (banbooData['level'] is String) {
+      banbooData['level'] = int.parse(banbooData['level']);
+    }
+
+    // Print the data being sent for debugging
+    print('Sending data to server: ${json.encode(banbooData)}');
+
+    final response = await http.post(
+      Uri.parse('$baseURL/banboos'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(banbooData),
+    );
+
+    print('Server response: ${response.body}'); // Add this for debugging
+
+    if (response.statusCode == 201) {
+      return Banboo.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to create banboo: ${response.body}');
+    }
+  } catch (e) {
+    print('Error details: $e'); // Add this for debugging
+    throw Exception('Error creating banboo: $e');
+  }
+}
+
+Future<Banboo> updateBanboo(int id, Map<String, dynamic> banbooData) async {
+  try {
+    final token = await SessionManager.getToken();
+    final response = await http.put(
+      Uri.parse('$baseURL/banboos/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(banbooData),
+    );
+
+    if (response.statusCode == 200) {
+      return Banboo.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to update banboo');
+    }
+  } catch (e) {
+    throw Exception('Error: $e');
+  }
+}
+
+Future<void> deleteBanboo(int id) async {
+  try {
+    final token = await SessionManager.getToken();
+    final response = await http.delete(
+      Uri.parse('$baseURL/banboos/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete banboo');
+    }
+  } catch (e) {
+    throw Exception('Error: $e');
   }
 }

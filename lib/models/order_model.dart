@@ -16,7 +16,7 @@ class Order {
     required this.quantity,
     required this.totalPrice,
     required this.orderDate,
-    required this.status,
+    this.status = 'success', //
     required this.banbooName,
     this.banbooImage,
   });
@@ -29,7 +29,7 @@ class Order {
       quantity: json['quantity'],
       totalPrice: double.parse(json['totalPrice'].toString()),
       orderDate: DateTime.parse(json['orderDate']),
-      status: json['status'],
+      status: json['status'] ?? 'success',
       banbooName:
           json['name'], // Assuming this comes from the JOIN with banboo table
       banbooImage: json['imageUrl'],

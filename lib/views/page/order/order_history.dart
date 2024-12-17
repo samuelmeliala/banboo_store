@@ -56,9 +56,16 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Order History'),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        elevation: 0,
+        title: const Text(
+          'Order History',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
