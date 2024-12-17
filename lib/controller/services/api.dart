@@ -68,3 +68,22 @@ Future<Banboo> fetchBanbooById(int id) async {
     throw Exception('Error: $e');
   }
 }
+
+Future<List<Banboo>> searchBanboos(String query) async {
+  final url = Uri.parse('$baseURL/banboo/search').replace(
+    queryParameters: {'query': query},
+  );
+
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Banboo.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to search banboos');
+    }
+  } catch (e) {
+    throw Exception('Error searching banboos: $e');
+  }
+}

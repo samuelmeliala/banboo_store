@@ -16,13 +16,50 @@ class _HomePageState extends State<HomePage> {
   int cartItemCount = 0;
   String username = 'User';
   List<Banboo> banboos = [];
+  List<Banboo> searchBanboo = [];
   bool isLoading = true;
+  String _error = '';
 
   @override
   void initState() {
     super.initState();
     _loadUsername();
+    _loadAllBanboos();
     _loadData();
+  }
+
+  Future<void> _loadAllBanboos() async {
+    setState(() {
+      isLoading = true;
+      _error = '';
+    });
+
+    try {
+      var banboos = await fetchBanboos();
+      setState(() {
+        banboos = banboos;
+        searchBanboo = banboos; // Initially show all banboos
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load banboos: $e';
+        isLoading = false;
+      });
+    }
+  }
+
+  void _filterBanboos(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        searchBanboo = banboos;
+      } else {
+        searchBanboo = banboos
+            .where((banboo) =>
+                banboo.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   Future<void> _loadData() async {
@@ -115,6 +152,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 controller: _searchController,
+                onChanged: _filterBanboos,
                 decoration: InputDecoration(
                   hintText: 'Search Banboo...',
                   prefixIcon: const Icon(Icons.search),
@@ -127,134 +165,149 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            if (_searchController.text.isEmpty)
+              // Carousel for featured products (show when not searching)
+              const CarouselImage(),
 
-            // Carousel for featured products
-            const CarouselImage(),
-
+            if (_error.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  _error,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            // Loading indicator
+            if (isLoading) const Center(child: CircularProgressIndicator()),
             // Products Grid
             Expanded(
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : banboos.isEmpty
-                      ? const Center(child: Text('No banboos available'))
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(16),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.75,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
-                          itemCount: banboos.length,
-                          itemBuilder: (context, index) {
-                            final banboo = banboos[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ProductDetailPage(banboo: banboo),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Product Image
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFF7F8F9),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Center(
-                                          child: banboo.imageUrl != null
-                                              ? Image.network(
-                                                  banboo.imageUrl!,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Icon(
-                                                  Icons.image,
-                                                  size: 50,
-                                                  color: Colors.grey[400],
-                                                ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  banboo.name,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon: Icon(
-                                                  banboo.isFavorite
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_border,
-                                                  color: banboo.isFavorite
-                                                      ? Colors.red
-                                                      : Colors.grey,
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    banboo.isFavorite =
-                                                        !banboo.isFavorite;
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            '\$${banboo.price.toStringAsFixed(2)}',
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black54,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+              child: searchBanboo.isEmpty && !isLoading
+                  ? Center(
+                      child: Text(
+                        _searchController.text.isEmpty
+                            ? 'No banboos available'
+                            : 'No banboos found for "${_searchController.text}"',
+                      ),
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: searchBanboo.length,
+                      itemBuilder: (context, index) {
+                        final banboo = searchBanboo[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProductDetailPage(banboo: banboo),
                               ),
                             );
                           },
-                        ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF7F8F9),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: banboo.imageUrl != null
+                                          ? Image.network(banboo.imageUrl!)
+                                          : Icon(
+                                              Icons.image,
+                                              size: 50,
+                                              color: Colors.grey[400],
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              banboo.name,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                              banboo.isFavorite
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: banboo.isFavorite
+                                                  ? Colors.red
+                                                  : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                banboo.isFavorite =
+                                                    !banboo.isFavorite;
+                                                // TODO: Update favorite status in backend
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        '\$${banboo.price.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 }
