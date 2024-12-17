@@ -90,19 +90,9 @@ Future<List<Banboo>> searchBanboos(String query) async {
 Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
   try {
     final token = await SessionManager.getToken();
+    if (token == null) throw Exception('Not authenticated');
 
-    if (banbooData['price'] is String) {
-      banbooData['price'] = double.parse(banbooData['price']);
-    }
-
-    if (banbooData['elementId'] is String) {
-      banbooData['elementId'] = int.parse(banbooData['elementId']);
-    }
-    if (banbooData['level'] is String) {
-      banbooData['level'] = int.parse(banbooData['level']);
-    }
-
-    // print('Sending data to server: ${json.encode(banbooData)}');
+    print('Creating banboo with data: $banbooData'); // Debug log
 
     final response = await http.post(
       Uri.parse('$baseURL/banboos'),
@@ -110,54 +100,57 @@ Future<Banboo> createBanboo(Map<String, dynamic> banbooData) async {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: json.encode(banbooData),
+      body: json.encode({
+        'name': banbooData['name'],
+        'price': banbooData['price'],
+        'description': banbooData['description'],
+        'elementId': banbooData['elementId'],
+        'level': banbooData['level'],
+        'imageUrl': banbooData['imageUrl'],
+      }),
     );
 
-    // print('Server response: ${response.body}');
+    print('Response status: ${response.statusCode}'); // Debug log
+    print('Response body: ${response.body}'); // Debug log
 
     if (response.statusCode == 201) {
       return Banboo.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create banboo: ${response.body}');
+      final errorData = json.decode(response.body);
+      throw Exception(errorData['error'] ?? 'Failed to create banboo');
     }
   } catch (e) {
-    // print('Error details: $e');
-    throw Exception('Error creating banboo: $e');
+    print('Error creating banboo: $e'); // Debug log
+    throw Exception('Failed to create banboo: $e');
   }
 }
 
 Future<Banboo> updateBanboo(int id, Map<String, dynamic> banbooData) async {
   try {
     final token = await SessionManager.getToken();
-    final isAdmin = await SessionManager.isAdmin();
-
-    if (!isAdmin) {
-      throw Exception('Access denied. Admin privileges required.');
-    }
-
-    // print('Updating banboo with data: $banbooData');
-
     final response = await http.put(
       Uri.parse('$baseURL/banboos/$id'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: json.encode(banbooData),
+      body: json.encode({
+        'name': banbooData['name'],
+        'price': banbooData['price'],
+        'description': banbooData['description'],
+        'elementId': banbooData['elementId'],
+        'level': banbooData['level'],
+        'imageUrl': banbooData['imageUrl'], // Added this
+      }),
     );
-
-    // print('Update response status: ${response.statusCode}');
-    // print('Update response body: ${response.body}');
 
     if (response.statusCode == 200) {
       return Banboo.fromJson(json.decode(response.body));
     } else {
-      final errorData = json.decode(response.body);
-      throw Exception(errorData['error'] ?? 'Failed to update banboo');
+      throw Exception('Failed to update banboo');
     }
   } catch (e) {
-    // print('Error updating banboo: $e');
-    throw Exception('Failed to update banboo: $e');
+    throw Exception('Error: $e');
   }
 }
 
